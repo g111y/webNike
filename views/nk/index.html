@@ -40,7 +40,7 @@
 {{super()}}
 <script>
     Vue.config.delimiters = ['${', '}'];
-    let inputGdno = new Vue({
+    var inputGdno = new Vue({
         el: "#inputGdno",
         data: {
             gdno: "",
@@ -70,7 +70,7 @@
             }
         }
     });
-    let infoList = new Vue({
+    var infoList = new Vue({
         delimiters: ['${', '}'],
         el: "#infoList",
         data: {
@@ -89,7 +89,7 @@
             }
         }
     });
-    let barTable=new Vue({
+    var barTable=new Vue({
         delimiters: ['${', '}'],
         el: "#barTable",
         data:{
