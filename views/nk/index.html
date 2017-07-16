@@ -1,0 +1,100 @@
+{% extends "nk/layout.html" %} 
+{% block header %}
+<style>
+    #inputGdno {
+        max-width: 300px;
+    }
+</style>
+{% endblock %} 
+{% block content %}
+<el-input id="inputGdno" placeholder="请输入货号" icon="search" v-model="gdno" :on-icon-click="handleIconClick" v-loading.fullscreen.lock="fullscreenLoading">
+</el-input>
+<el-row id="infoList">
+    <el-col :span="24">
+        <el-card :body-style="{ padding: '0px' }">
+            <img style="min-width:200px;max-width:400px;" v-bind:src="imgUrl" class="image">
+            <div style="padding: 14px;">
+                <span>${item.name}</span> 
+            </div>
+            <div>
+                <el-tag>${item.code}</el-tag>
+                <el-tag>${item.colorName}</el-tag>
+                <el-tag type="danger">${item.genderName}</el-tag>
+                <el-tag type="danger">${item.tagPrice}</el-tag>
+                <el-tag>${item.categoryName}</el-tag>
+                <el-tag>${item.purchaseSeasonName}</el-tag>
+                <el-tag type="danger">${item.yearsName}</el-tag>
+            </div>
+        </el-card>
+    </el-col>
+</el-row>
+<el-row>
+    <el-table id="barTable" :data="bar" style="width: 100%"
+        :default-sort = "{prop: 'barcode'}">
+        <el-table-column sortable prop="barcode" label="条码" width="180"></el-table-column>
+        <el-table-column sortable prop="sizeNo" label="尺码" width="180"></el-table-column>
+    </el-table>
+</el-row>
+{% endblock %} 
+{% block script %} 
+{{super()}}
+<script>
+    Vue.config.delimiters = ['${', '}'];
+    let inputGdno = new Vue({
+        el: "#inputGdno",
+        data: {
+            gdno: "",
+            fullscreenLoading: false
+        },
+        methods: {
+            handleIconClick(ev) {
+                if(this.gdno.length!=10){
+                    alert("货号长度不正确!");
+                    return ;
+                }
+                this.fullscreenLoading = true;
+                this.$http.post("/nk/gdno", {
+                    gdno: this.gdno
+                }).then((res) => {
+                    this.fullscreenLoading = false;
+                    infoList.imgUrl = "http://pic.belle.net.cn/2017/MDM/NK/" + this.gdno + ".jpg"
+                    let item=res.body;
+                    console.log(item);
+                    if(item.success==false){
+                        alert(item.errText);
+                        return;
+                    }
+                    infoList.item=item.item;
+                    barTable.bar=item.item.bar;
+                })
+            }
+        }
+    });
+    let infoList = new Vue({
+        delimiters: ['${', '}'],
+        el: "#infoList",
+        data: {
+            imgUrl: "http://img18.house365.com/newcms/2015/03/19/1426735301550a40c5570a1.jpg",
+            item: {
+                itemNo: "",
+                code: "", //货号
+                colorName: "",//颜色
+                name: "",//品名
+                genderName: "",//性别
+                sizeKind: "",//尺码组
+                tagPrice: "",//牌价
+                categoryName: "",//类别
+                purchaseSeasonName: "",//季节
+                yearsName: "",
+            }
+        }
+    });
+    let barTable=new Vue({
+        delimiters: ['${', '}'],
+        el: "#barTable",
+        data:{
+            bar:[]
+        }
+    });
+</script>
+{% endblock %}
