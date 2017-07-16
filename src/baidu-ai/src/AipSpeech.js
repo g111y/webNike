@@ -18,9 +18,9 @@ const BaseClient = require('./client/baseClient');
 
 const RequestInfo = require('./client/requestInfo');
 
-const HttpClientVoiceASR = require('./http/HttpClientVoiceASR');
+const HttpClientVoiceASR = require('./http/httpClientVoiceASR');
 
-const HttpClientVoiceTTS = require('./http/HttpClientVoiceTTS');
+const HttpClientVoiceTTS = require('./http/httpClientVoiceTTS');
 
 const objectTools = require('./util/objectTools');
 
