@@ -1,12 +1,13 @@
 let ApiOcx = require("../baidu-ai/src/index.js").ocr;
 let fs = require("fs");
 let request = require("superagent");
+let config=require("./config.json");
 //require('superagent-proxy')(request);
 //let proxy = process.env.http_proxy || 'http://200.53.2.12:80';
 
-let App_id = "9851355";
-let Api_key = "gXQf5uKNso6FFgPa7yKMNjWq";
-let Secret_key = "CBUiRZyQxDtwyUmq8axaaAkvHiWs4YUN";
+let App_id = config.baidu.Api_key;
+let Api_key = config.baidu.Api_key;
+let Secret_key = config.baidu.Secret_key;
 let loginImageUrl = `http://retail.belle.net.cn/createVerifyCode?sessionKey=naviVerifyCode&time=${(new Date()).valueOf()}`;
 
 let client = new ApiOcx(App_id, Api_key, Secret_key);
@@ -14,8 +15,9 @@ let client = new ApiOcx(App_id, Api_key, Secret_key);
 let cookies = [];
 
 let loginUrl = "http://retail.belle.net.cn/be_ready_login";
-let loginName = "NKMGY1";
-let loginPassword = "NKMGY1";
+
+let loginName=config.nike.loginName;
+let loginPassword=config.nike.loginPassword;
 
 let topPage = "http://retail.belle.net.cn/pos/sso_to_index"; //登陆后的首页面
 
@@ -50,7 +52,7 @@ function getImageText() {
             console.log(`登陆验证码:${result.words_result[0].words}`);
             resolve(result.words_result[0].words);
         }).catch((err) => {
-            reject(ree);
+            reject(err);
         });
     });
 }
