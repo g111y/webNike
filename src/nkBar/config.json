@@ -1,0 +1,15 @@
+{
+    "nike":{
+        "loginName":"NKMGY1",
+        "loginPassword":"NKMGY1"
+    },
+    "baidu":{
+        "App_id":"9851355",
+        "Api_key":"gXQf5uKNso6FFgPa7yKMNjWq",
+        "Secret_key":"CBUiRZyQxDtwyUmq8axaaAkvHiWs4YUN"
+    },
+    "pospal":{
+        "loginName":"13310402022",
+        "loginPassword":"nike200100"
+    }
+}

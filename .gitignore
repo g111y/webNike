@@ -47,6 +47,8 @@ jspm_packages
 .yarn-integrity
 
 #userfile
-/cookie.txt
-/loginTime.txt
-src/nkBar/config.json
+
+loginTime.txt
+cookie.txt
+1.xlsx
+2.jpg
