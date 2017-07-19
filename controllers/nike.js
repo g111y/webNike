@@ -9,7 +9,15 @@ class nike {
     async gdno(ctx, next) {
         await next();
         let gdno = ctx.request.body.gdno;
-        console.log(gdno);
+        let valueLocal=await query.listLocal(gdno);//先查本地数据库是否有资料
+        console.log(`本地查询到${valueLocal.length}条数据!`);
+
+        if(valueLocal.length!=0){
+            ctx.boty=valueLocal;
+            return ;
+        }
+
+        
         let stat = await login();
         let data = {};
         console.log(stat);
@@ -24,6 +32,9 @@ class nike {
             ctx.body = data;
             return;
         }
+        //资料存储在本地
+        query.storeGdno(value);
+        
         data.success = true;
         data.item = value;
         ctx.body = data;
