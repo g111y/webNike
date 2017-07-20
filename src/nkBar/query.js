@@ -20,7 +20,7 @@ class queryList {
         this.connection = mysql.createConnection({
             host: 'localhost',
             user: 'root',
-            passwork: "123456",
+            password: "123456",
             database: 'nike'
         });
     }
