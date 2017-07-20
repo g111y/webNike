@@ -21,8 +21,8 @@ class nike {
                 ctx.body = data;
                 return;
             }
-        }catch(err){
-            
+        } catch (err) {
+
         }
 
 
@@ -30,15 +30,16 @@ class nike {
         let stat = await login();
         console.log(stat);
         let value = await query.list(gdno);
-        let value2 = await query.listBar(value);
-        if (value2) {
-            value.bar = value2;
-        }
+
         if (value == false) {
             data.success = false;
             data.errText = `没有找到${gdno}的资料`;
             ctx.body = data;
             return;
+        }
+        let value2 = await query.listBar(value);
+        if (value2) {
+            value.bar = value2;
         }
         //资料存储在本地
         query.storeGdno(value);
