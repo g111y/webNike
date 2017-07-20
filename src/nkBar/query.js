@@ -36,6 +36,18 @@ class queryList {
         });
     }
 
+    listBarLocal(itemNo) {
+        return new Promise((resolve, reject) => {
+            console.log(itemNo);
+            this.connection.query("SELECT * FROM `itembars` WHERE `itemNo`=? ", [itemNo], (error, results, fields) => {
+                if (error) {
+                    reject(error);
+                }
+                resolve(results);
+            });
+        });
+    }
+
     storeGdno(item) {
         let sql = `INSERT INTO \`items\` 
             (\`itemNo\`, \`code\`, \`colorName\`, \`name\`, \`genderName\`, \`sizeKind\`, 
@@ -49,7 +61,15 @@ class queryList {
             }
             console.log(resutls);
         });
-        // console.log(item);
+        for (let bar of item.bar) {
+            let barSql = `INSERT INTO \`itembars\` (\`itemNo\`, \`code\`, \`barcode\`, \`sizeKind\`, \`sizeNo\`)
+                    VALUES ('${bar.itemNo}','${bar.code}','${bar.barcode}','${bar.sizeKind}','${bar.sizeNo}')`;
+            this.connection.execute(barSql, (error, resutls, fields) => {
+                if (error) {
+                    console.log(error);
+                }
+            })
+        }
     }
 
     list(gdno) {
