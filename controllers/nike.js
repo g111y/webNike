@@ -2,6 +2,7 @@ const login = require("../src/nkBar/login").login;
 const queryList = require("../src/nkBar/query.js");
 const query = new queryList();
 
+
 class nike {
     // constructor() {
     //     console.log("this is nike");
@@ -47,6 +48,14 @@ class nike {
         data.success = true;
         data.item = value;
         ctx.body = data;
+    }
+
+    async saleFileUpload(ctx,next){
+        await next();
+
+        console.log(ctx.req.file.filename);
+        ctx.body=ctx.req.file.filename;
+        //console.log(ctx);
     }
 }
 

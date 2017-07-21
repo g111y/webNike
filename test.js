@@ -18,7 +18,7 @@ for (let item of result.Sheet1) {
     }
     if (item.G && gdnoReg.test(item.G)) {
         let gdnoText = gdnoReg.exec(item.G);
-        item.code=gdnoText[0];
+        sheet.code=gdnoText[0];
         sheet.workdate=workdate;
         sheet.saler=item.F;
         sheet.barNo=item.H;
@@ -29,4 +29,20 @@ for (let item of result.Sheet1) {
         items.push(sheet);
     }
 }
+//按日期排序
+items.sort(function(value1,value2){
+    if (value1.workdate < value2.workdate){
+        return -1;
+    }else{
+        return 1;
+    }
+});
 console.log(items);
+console.log(items[0].workdate);
+console.log(items[items.length - 1].workdate);
+
+sql=`INSERT INTO \`saleItems\` (
+    \`workdate\`, \`code\`, \`barNo\`, 
+    \`saler\`, \`qty\`, \`tagPrice\`, 
+    \`salePrice\`, \`profit\`) 
+    VALUES ('1', '1', '1', '1', '1', '1', '1', '1')`;
