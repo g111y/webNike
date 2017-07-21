@@ -11,5 +11,11 @@
     "pospal": {
         "loginName": "13310402022",
         "loginPassword": "nike200100"
+    },
+    "db": {
+        "host": "localhost",
+        "user": "root",
+        "password": "root",
+        "database": "nike"
     }
 }

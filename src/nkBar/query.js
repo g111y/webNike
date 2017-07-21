@@ -5,6 +5,7 @@ let fs = require("fs");
 
 // get the client
 const mysql = require('mysql2');
+let config=require("./config.json");
 
 class queryList {
     constructor() {
@@ -17,12 +18,7 @@ class queryList {
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
             "Referer": "http://retail.belle.net.cn/pos/common_item_info/list",
         };
-        this.connection = mysql.createConnection({
-            host: 'localhost',
-            user: 'root',
-            password: "123456",
-            database: 'nike'
-        });
+        this.connection = mysql.createConnection(config.db);
     }
 
     listLocal(gdno) { //查询本地数据库的商品资料

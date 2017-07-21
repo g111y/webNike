@@ -1,5 +1,6 @@
 const login = require("../src/nkBar/login").login;
 const queryList = require("../src/nkBar/query.js");
+const parseExcel = require("../src/nkBar/sales.js");
 const query = new queryList();
 
 
@@ -52,7 +53,7 @@ class nike {
 
     async saleFileUpload(ctx,next){
         await next();
-
+        parseExcel(ctx.req.file.filename);
         console.log(ctx.req.file.filename);
         ctx.body=ctx.req.file.filename;
         //console.log(ctx);
