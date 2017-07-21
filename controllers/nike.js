@@ -22,7 +22,7 @@ class nike {
                 return;
             }
         } catch (err) {
-
+            console.log(err);
         }
 
 
