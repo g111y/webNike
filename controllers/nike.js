@@ -54,7 +54,6 @@ class nike {
     async saleFileUpload(ctx,next){
         await next();
         parseExcel(ctx.req.file.filename);
-        console.log(ctx.req.file.filename);
         ctx.body=ctx.req.file.filename;
         //console.log(ctx);
     }

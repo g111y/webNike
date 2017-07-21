@@ -1,4 +1,5 @@
 const mysql = require('mysql2');
+const fs=require("fs");
 const config = require("./config.json");
 const excelToJson = require('convert-excel-to-json');
 
@@ -7,8 +8,9 @@ const gdnoReg = /\w{6}-\w{3}/;
 const connection = mysql.createConnection(config.db);
 
 function parseExcel(filename) {
+    let realFilename="public/uploads/"+filename;
     let result = excelToJson({
-        sourceFile: "public/uploads/"+filename
+        sourceFile: realFilename
     });
     let items = [];
     let workdate;
@@ -49,6 +51,7 @@ function parseExcel(filename) {
         for (let a of items) {
             storeItems(a);
         }
+        fs.unlink(realFilename);
     });
     return items;
 }
