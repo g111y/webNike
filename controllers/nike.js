@@ -1,6 +1,7 @@
 const login = require("../src/nkBar/login").login;
 const queryList = require("../src/nkBar/query.js");
-const parseExcel = require("../src/nkBar/sales.js");
+const parseExcel = require("../src/nkBar/sales.js").parseExcel;
+const getCodeInfo = require("../src/nkBar/sales.js").getCodeInfo;
 const query = new queryList();
 
 
@@ -51,11 +52,35 @@ class nike {
         ctx.body = data;
     }
 
-    async saleFileUpload(ctx,next){
+    async saleFileUpload(ctx, next) {
         await next();
+        let codeInfo = await getCodeInfo();
+        for (let code of codeInfo) {
+            let valueLocal = await query.listLocal(code.code); //先查本地数据库是否有资料
+            console.log(`${code.code}本地查询到${valueLocal.length}条数据!`);
+            if (valueLocal.length != 0) {
+                continue;
+            }
+            //取NK系统的信息
+            let stat = await login();
+            console.log(stat);
+            let value = await query.list(code.code);
+
+            if (value == false) {
+                console.log(`没有找到${code.code}的资料`);
+                continue;
+            }
+            let value2 = await query.listBar(value);
+            if (value2) {
+                value.bar = value2;
+            }
+            //资料存储在本地
+            query.storeGdno(value);
+        }
+
         parseExcel(ctx.req.file.filename);
-        ctx.body=ctx.req.file.filename;
-        //console.log(ctx);
+        ctx.body = ctx.req.file.filename;
+
     }
 }
 

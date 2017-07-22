@@ -45,10 +45,12 @@ class queryList {
     }
 
     storeGdno(item) {
+        let name=item.name.replace("'","");
+        console.log(name);
         let sql = `INSERT INTO \`items\` 
             (\`itemNo\`, \`code\`, \`colorName\`, \`name\`, \`genderName\`, \`sizeKind\`, 
                 \`tagPrice\`, \`categoryName\`, \`purchaseSeasonName\`, \`yearsName\`) 
-            VALUES ('${item.itemNo}', '${item.code}', '${item.colorName}', '${item.name}', 
+            VALUES ('${item.itemNo}', '${item.code}', '${item.colorName}', '${name}', 
                 '${item.genderName}', '${item.sizeKind}', '${item.tagPrice}', '${item.categoryName}',
                  '${item.purchaseSeasonName}', '${item.yearsName}')`;
         this.connection.execute(sql, (error, resutls, fields) => {
@@ -57,6 +59,7 @@ class queryList {
             }
             console.log(resutls);
         });
+        this.connection.execute(`delete from \`itembars\` where \`code\`='${item.code}'`);
         for (let bar of item.bar) {
             let barSql = `INSERT INTO \`itembars\` (\`itemNo\`, \`code\`, \`barcode\`, \`sizeKind\`, \`sizeNo\`)
                     VALUES ('${bar.itemNo}','${bar.code}','${bar.barcode}','${bar.sizeKind}','${bar.sizeNo}')`;
