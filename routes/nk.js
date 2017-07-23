@@ -5,8 +5,11 @@ const upload = multer({ dest: 'public/uploads' });
 
 
 router.prefix('/nk');
-
+router.use(async function(ctx,next){
+    await next();   //这里可以使用中间件
+});
 router.get('/', async function (ctx, next) {
+    console.log(ctx.session);
     await ctx.render('nk/index', {
         title: 'nk'
     })

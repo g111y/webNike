@@ -1,7 +1,7 @@
 const login = require("../src/nkBar/login").login;
 const queryList = require("../src/nkBar/query.js");
-const parseExcel = require("../src/nkBar/sales.js").parseExcel;
-const getCodeInfo = require("../src/nkBar/sales.js").getCodeInfo;
+const {parseExcel,getCodeInfo} = require("../src/nkBar/sales.js");//.parseExcel;
+//const getCodeInfo = require("../src/nkBar/sales.js").getCodeInfo;
 const query = new queryList();
 
 

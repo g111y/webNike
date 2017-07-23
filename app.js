@@ -6,7 +6,7 @@ const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 const nunjucks=require('nunjucks');
-
+const session = require("koa-session2");
 
 const index = require('./routes/index')
 const users = require('./routes/users')
@@ -23,6 +23,11 @@ app.use(bodyparser({
 app.use(json())
 app.use(logger())
 app.use(require('koa-static')(__dirname + '/public'))
+
+app.use(session({
+    key: "SESSIONID",   //default "koa:sess" ,
+    maxAge:3600*1000*3,
+}));
 
 nunjucks.configure('views', { autoescape: true });
 app.use(views(__dirname + '/views', {
