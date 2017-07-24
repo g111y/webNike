@@ -1,13 +1,135 @@
 {% extends "nk/layout.html" %} 
-{% block header %}
-
+{% block header %} 
 {% endblock %} 
 {% block content %}
+<br />
+<div id="dateSelect">
+    <template>
+        <div class="block">
+            <span class="demonstration">请选择日期</span>
+            <el-date-picker v-model="value" type="daterange" align="right" 
+                placeholder="选择日期范围" :picker-options="pickerOptions"
+                format="yyyyMMdd" 
+                v-loading.fullscreen.lock="fullscreenLoading">
+            </el-date-picker>
+            <el-button v-on:click="query" type="primary" icon="search">查询</el-button>
+        </div>
+    </template>
+</div>
 
+<div id="table1">
+    <template>
+        <el-table :data="tableData" style="width: 100%" height="600" show-summary>
+            <el-table-column label="图片" width="180">
+                <template scope="scope">
+                    <img style="width: 100px;height:100px;" v-bind:src="scope.row.imageUrl" />
+                </template>
+            </el-table-column>
+            <el-table-column prop="colorName" sortable label="颜色" width="180"></el-table-column>
+            <el-table-column prop="name" label="名称" width="180"></el-table-column>
+            <el-table-column prop="genderName" sortable label="性别"></el-table-column>
+            <el-table-column prop="tagPrice" label="牌价"></el-table-column>
+            <el-table-column prop="categoryName" sortable label="类别"></el-table-column>
+            <el-table-column prop="purchaseSeasonName" sortable label="季节"></el-table-column>
+            <el-table-column prop="yearsName" sortable label="年份"></el-table-column>
+            <el-table-column prop="qty" sortable label="销售数量"></el-table-column>
+            <el-table-column prop="tagPrices" sortable label="累计牌价销售"></el-table-column>
+            <el-table-column prop="salePrices" sortable label="累计销售"></el-table-column>
+            <el-table-column prop="profits" sortable label="累计毛利"></el-table-column>
+        </el-table>
+    </template>
+</div>
+          
 {% endblock %} 
 {% block script %} 
 {{super()}}
 <script>
+    "strict mode";
     
+
+    let table1=new Vue({
+        delimiters: ['${', '}'],
+        el:"#table1",
+        data:{
+            tableData:[{
+                code: '898457-001',
+                colorName: '透明',
+                name: 'NIKE FLEX',
+                genderName: '男子',
+                tagPrice: '669',
+                categoryName: '鞋',
+                purchaseSeasonName:"",
+                yearsName: '2017',
+                qty: '1',
+                tagPrices: '669.0',
+                salePrices: '669.',
+                profits: '267.60'
+            }]
+        }
+    });
+
+    let dateSelect=new Vue({
+        delimiters: ['${', '}'],
+        el:"#dateSelect",
+        data:{
+            fullscreenLoading:false,
+            pickerOptions: {
+                shortcuts: [{
+                    text: '最近一周',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                        picker.$emit('pick', [start, end]);
+                        }
+                }, {
+                    text: '最近一个月',
+                    onClick(picker) {
+                    const end = new Date();
+                    const start = new Date();
+                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                    picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近三个月',
+                    onClick(picker) {
+                    const end = new Date();
+                    const start = new Date();
+                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                    picker.$emit('pick', [start, end]);
+                    }
+                }]
+            },
+            value: ''
+        },
+        methods:{
+            query(){
+                let sd=getIntDate(this.value[0]);
+                let dd=getIntDate(this.value[1]);
+                this.fullscreenLoading=true;
+                this.$http.post("/nk/saleQuery", {
+                    sdate: sd,
+                    edate:dd
+                }).then((res) => {
+                    this.fullscreenLoading = false;
+                    console.log(res.body);
+                    let data=res.body;
+                    if (data.success==false){
+                        return;
+                    }
+                    for(let i=0;i<data.data.length;i++){
+                        data.data[i].imageUrl="http://pic.belle.net.cn/2017/MDM/NK/" + data.data[i].code + ".jpg";
+                    }
+                    table1.tableData=data.data;
+                })
+            }
+        }
+    });
+    function getIntDate(dd){
+        let year=dd.getFullYear().toString();
+        let month=(dd.getMonth()+1)<10?'0'+(dd.getMonth()+1).toString():(dd.getMonth()+1);
+        let day=dd.getDate()<10?'0'+dd.getDate().toString():dd.getDate();
+        return year+month+day;
+    }
 </script>
 {% endblock %}

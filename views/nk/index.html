@@ -7,6 +7,7 @@
 </style>
 {% endblock %} 
 {% block content %}
+<br />
 <el-input id="inputGdno" placeholder="请输入货号" icon="search" v-model="gdno" :on-icon-click="handleIconClick" v-loading.fullscreen.lock="fullscreenLoading">
 </el-input>
 <el-row id="infoList">
@@ -39,6 +40,7 @@
 {% block script %} 
 {{super()}}
 <script>
+    'strict mode'
     Vue.config.delimiters = ['${', '}'];
     var inputGdno = new Vue({
         el: "#inputGdno",
@@ -57,7 +59,7 @@
                     gdno: this.gdno
                 }).then((res) => {
                     this.fullscreenLoading = false;
-                    infoList.imgUrl = "http://pic.belle.net.cn/2017/MDM/NK/" + this.gdno + ".jpg"
+                    infoList.imgUrl = "http://pic.belle.net.cn/2017/MDM/NK/" + this.gdno + ".jpg";
                     let item=res.body;
                     console.log(item);
                     if(item.success==false){

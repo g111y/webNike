@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 
 <head>
     
@@ -39,6 +39,7 @@
 </body>
 {% block script %}
 <script>
+    'strict mode'
     Vue.config.delimiters = ['${', '}'];
     var nav =new Vue({
         delimiters: ['${', '}'],
@@ -58,6 +59,10 @@
                         break;
                     case '2-2':
                         window.location.href="/nk/saleFileUpload";
+                        console.log(key);
+                        break;
+                    case '2-3':
+                        window.location.href="/nk/saleQuery";
                         console.log(key);
                         break;
                 }

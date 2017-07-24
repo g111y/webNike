@@ -79,30 +79,6 @@ function storeItems(item) {
     });
 }
 
-async function ss(code) {
-    console.log(code)
-    let valueLocal = await query.listLocal(code); //先查本地数据库是否有资料
-    console.log(`本地查询到${valueLocal.length}条数据!`);
-    if (valueLocal.length != 0) {
-        return;
-    }
-    //取NK系统的信息
-    let stat = await login();
-    console.log(stat);
-    let value = await query.list(code);
-
-    if (value == false) {
-        console.log(`没有找到${code}的资料`);
-        return;
-    }
-    let value2 = await query.listBar(value);
-    if (value2) {
-        value.bar = value2;
-    }
-    //资料存储在本地
-    query.storeGdno(value);
-}
-
 function getCodeInfo() {
     return new Promise((resolve,reject) => {
         let sql = "SELECT saleitems.`code` FROM saleitems GROUP BY saleitems.`code`";
@@ -114,7 +90,37 @@ function getCodeInfo() {
         })
     });
 }
+
+function saleQuery(sdate,edate){
+    return new Promise((resolve,reject)=>{
+        sql=`SELECT items.code,items.colorName,items.name,items.genderName,
+                    items.tagPrice,items.categoryName,items.purchaseSeasonName,
+                    items.yearsName,Sum(saleitems.qty) AS qty,
+                    Sum(saleitems.tagPrice) AS tagPrices,
+                    Sum(saleitems.salePrice) AS salePrices,
+                    Sum(saleitems.profit) AS profits
+                FROM
+                    saleitems,
+                    items
+                WHERE
+                    saleitems.code = items.code
+                AND saleitems.workdate >= ${sdate}
+                AND saleitems.workdate <= ${edate}
+                GROUP BY
+                    items.code,items.colorName,items.name,
+                    items.genderName,items.tagPrice,
+                    items.categoryName,items.purchaseSeasonName,
+                    items.yearsName`;
+        connection.query(sql,(error,results,field)=>{
+            if (error){
+                reject(error);
+            }
+            resolve(results);
+        });
+    });
+}
 exports = module.exports = {
     "parseExcel": parseExcel,
-    "getCodeInfo": getCodeInfo
+    "getCodeInfo": getCodeInfo,
+    "saleQuery":saleQuery
 };

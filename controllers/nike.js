@@ -1,6 +1,6 @@
 const login = require("../src/nkBar/login").login;
 const queryList = require("../src/nkBar/query.js");
-const {parseExcel,getCodeInfo} = require("../src/nkBar/sales.js");//.parseExcel;
+const sales = require("../src/nkBar/sales.js");//.parseExcel;
 //const getCodeInfo = require("../src/nkBar/sales.js").getCodeInfo;
 const query = new queryList();
 
@@ -54,7 +54,7 @@ class nike {
 
     async saleFileUpload(ctx, next) {
         await next();
-        let codeInfo = await getCodeInfo();
+        let codeInfo = await sales.getCodeInfo();
         for (let code of codeInfo) {
             let valueLocal = await query.listLocal(code.code); //先查本地数据库是否有资料
             console.log(`${code.code}本地查询到${valueLocal.length}条数据!`);
@@ -78,9 +78,26 @@ class nike {
             query.storeGdno(value);
         }
 
-        parseExcel(ctx.req.file.filename);
+        sales.parseExcel(ctx.req.file.filename);
         ctx.body = ctx.req.file.filename;
 
+    }
+
+    async saleQuery(ctx,next){
+        await next();
+        let data={
+            "success":false,
+            "data":"error"
+        };
+        try{
+            let results=await sales.saleQuery(ctx.request.body.sdate,ctx.request.body.edate);
+            data.success=true;
+            data.data=results
+            ctx.body = data;
+        }catch(err){
+            data.data=err;
+            ctx.body=data;
+        }
     }
 }
 
