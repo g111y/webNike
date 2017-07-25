@@ -1,0 +1,66 @@
+{% extends "nk/layout.html" %} 
+
+{% block header %}
+<script src="http://libs.baidu.com/jquery/2.0.0/jquery.min.js"></script>
+<style>
+    #inputGdno {
+        max-width: 300px;
+        width: 180px;
+        height: 30px;
+        font-size: 11px;
+        color:blue;
+    }
+</style>
+{% endblock %} 
+{% block content %}
+<br />
+<input id="inputGdno" placeholder="请输入货号"></input>
+<el-row>
+    <div id="table1">
+    <template>
+        <el-table :data="tableData" style="width: 100%">
+            <el-table-column prop="workdate" label="日期" width="180">
+            </el-table-column>
+            <el-table-column prop="ttime" label="单号" width="180">
+            </el-table-column>
+            <el-table-column  label="序号">
+                <template scope="scope">
+                    ${scope.$index+1}
+                </template>
+            </el-table-column>
+            <el-table-column prop="barNO" label="条码" width="180"></el-table-column>
+            <el-table-column prop="code" label="货号" width="180"></el-table-column>
+            <el-table-column prop="sizeNo" label="尺码" width="180"></el-table-column>
+            <el-table-column prop="qty" label="数量" width="180"></el-table-column>
+            <el-table-column prop="tagPrice" label="牌价" width="180"></el-table-column>
+        </el-table>
+    </template>
+    </div>
+</el-row>
+{% endblock %} 
+{% block script %} 
+{{super()}}
+<script>
+    'strict mode'
+    // $(function(){
+    //     console.log("aaa");
+    // });
+    $("#inputGdno").keydown(function(e) {  
+        if (e.keyCode == 13) {  
+            let gdno=$("#inputGdno").val()
+            $("#inputGdno").val("");
+            if (gdno.length<1){
+                return;
+            }
+            
+        }  
+    });
+    let table1=new Vue({
+        delimiters: ['${', '}'],
+        el:"#table1",
+        data:{
+          tableData: []
+        }
+    });
+</script>
+{% endblock %}

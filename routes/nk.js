@@ -26,6 +26,13 @@ router.get("/saleFileUpload", async(ctx, next) => {
 });
 router.post("/saleFileUpload", upload.single('file'), nike.saleFileUpload);
 
+router.get("/itemFileUpload", async(ctx, next) => {
+    await ctx.render('nk/itemFileUpload', {
+        title: '商品资料数据上传'
+    })
+});
+router.post("/itemFileUpload", upload.single('file'), nike.itemFileUpload);
+
 
 //销售查询
 router.get("/saleQuery", async(ctx, next) => {
@@ -35,4 +42,11 @@ router.get("/saleQuery", async(ctx, next) => {
 })
 router.post("/saleQuery",nike.saleQuery);
 
+
+router.get('/stkchk', async function (ctx, next) {
+    console.log(ctx.session);
+    await ctx.render('nk/stkchk', {
+        title: '盘点'
+    })
+})
 module.exports = router;

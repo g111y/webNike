@@ -124,6 +124,7 @@ let login = async() => {
         return stat;
     }
     try {
+        console.log("登陆");
         let cookie = await getLoginImage();
         let imgText = await getImageText();
         let res = await startLogin(imgText);
