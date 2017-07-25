@@ -18,21 +18,38 @@
 <el-row>
     <div id="table1">
     <template>
-        <el-table :data="tableData" style="width: 100%">
-            <el-table-column prop="workdate" label="日期" width="180">
+        <el-table :data="tableData" style="width: 100%" height="500" show-summary>
+            <el-table-column prop="workdate" label="日期" width="100">
             </el-table-column>
-            <el-table-column prop="ttime" label="单号" width="180">
+            <el-table-column prop="ttime"  label="单号" width="100">
             </el-table-column>
-            <el-table-column  label="序号">
+            <el-table-column label="图片" width="100">
+                <template scope="scope">
+                    <img style="width: 50px;height:50px;" v-bind:src="scope.row.imageUrl" />
+                </template>
+            </el-table-column>
+            <el-table-column  label="序号" width="60">
                 <template scope="scope">
                     ${scope.$index+1}
                 </template>
             </el-table-column>
-            <el-table-column prop="barNO" label="条码" width="180"></el-table-column>
+            <el-table-column prop="barNo" label="条码" width="180"></el-table-column>
             <el-table-column prop="code" label="货号" width="180"></el-table-column>
-            <el-table-column prop="sizeNo" label="尺码" width="180"></el-table-column>
-            <el-table-column prop="qty" label="数量" width="180"></el-table-column>
+            <el-table-column prop="sizeNo" label="尺码" width="100"></el-table-column>
+            <el-table-column prop="qty" label="数量" width="180">
+                <template scope="scope">
+                     <el-input-number size="small" v-model="scope.row.qty"></el-input-number>
+                </template>
+            </el-table-column>
             <el-table-column prop="tagPrice" label="牌价" width="180"></el-table-column>
+            <el-table-column label="操作">
+                <template scope="scope">
+                    <el-button
+                    size="small"
+                    type="danger"
+                    @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                </template>
+            </el-table-column>
         </el-table>
     </template>
     </div>
@@ -45,14 +62,30 @@
     // $(function(){
     //     console.log("aaa");
     // });
+    const workdate=getIntDate(new Date());
+    const ttime=Date.parse(new Date())/1000;
     $("#inputGdno").keydown(function(e) {  
         if (e.keyCode == 13) {  
-            let gdno=$("#inputGdno").val()
+            let barNO=$("#inputGdno").val()
             $("#inputGdno").val("");
-            if (gdno.length<1){
+            if (barNO.length<1){
                 return;
             }
-            
+            $.post("/nk/stkchkQueryNo",{
+                "barNo":barNO
+            },function(e){
+                console.log(e);
+                let item={};
+                item.barNo=e[0].barNo;
+                item.workdate=workdate;
+                item.ttime=ttime;
+                item.code=e[0].name;
+                item.imageUrl="http://pic.belle.net.cn/2017/MDM/NK/" + e[0].name + ".jpg";
+                item.sizeNo=e[0].sizeNo;
+                item.tagPrice=e[0].tagPrice;
+                item.qty=1;
+                table1.tableData.unshift(item);
+            });
         }  
     });
     let table1=new Vue({
@@ -60,7 +93,18 @@
         el:"#table1",
         data:{
           tableData: []
+        },
+        methods: {
+            handleDelete(index, row) {
+                this.tableData.splice(index,1);
+            }
         }
     });
+    function getIntDate(dd){
+        let year=dd.getFullYear().toString();
+        let month=(dd.getMonth()+1)<10?'0'+(dd.getMonth()+1).toString():(dd.getMonth()+1);
+        let day=dd.getDate()<10?'0'+dd.getDate().toString():dd.getDate();
+        return year+month+day;
+    }
 </script>
 {% endblock %}

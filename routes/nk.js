@@ -49,4 +49,6 @@ router.get('/stkchk', async function (ctx, next) {
         title: '盘点'
     })
 })
+
+router.post("/stkchkQueryNo",nike.stkchkQueryNo)
 module.exports = router;

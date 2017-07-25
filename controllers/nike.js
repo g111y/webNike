@@ -132,6 +132,14 @@ class nike {
             ctx.body=data;
         }
     }
+
+    async stkchkQueryNo(ctx,next){
+        await next();
+        let barNo=ctx.request.body.barNo||"";
+        console.log(barNo);
+        let results=await items.queryBarOrGdno(barNo);
+        ctx.body=results;
+    }
 }
 
 exports = module.exports = nike;

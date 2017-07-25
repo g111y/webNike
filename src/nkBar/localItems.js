@@ -35,8 +35,8 @@ function storeItems(item) {
     let sql = `INSERT INTO \`localItemInfo\` (\`name\`, \`clsName\`, \`barNo\`, \`utno\`, \`stock\`, 
         \`buyPrice\`, \`tagPrice\`, \`Price2\`, \`vipPrice\`, \`vipDisc\`, \`vipGd\`, \`maxStock\`, 
         \`minStock\`, \`vdName\`, \`py\`, \`code\`, \`colorName\`, \`sizeNo\`, \`stat\`, \`memo\`) 
-        VALUES ('${item.A}', '${item.B}', '${item.C}', '${item.D}', '${item.E||0}', '${item.F||0}', 
-            '${item.G||0}', '${item.H||0}', '${item.I||0}', '${item.J}', '${item.K}', '${item.L}', '${item.M}', '${item.N}',
+        VALUES ('${item.A}', '${item.B}', '${item.C}', '${item.D}', '${item.E || 0}', '${item.F || 0}', 
+            '${item.G || 0}', '${item.H || 0}', '${item.I || 0}', '${item.J}', '${item.K}', '${item.L}', '${item.M}', '${item.N}',
              '${item.O}', '${item.P}', '${item.Q}', '${item.R}', '${item.S}', '${item.T}')`;
     connection.execute(sql, (error, resutls, fields) => {
         if (error) {
@@ -46,18 +46,32 @@ function storeItems(item) {
 }
 
 function getCodeInfo() {
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
         let sql = "SELECT localItemInfo.`name` FROM localItemInfo GROUP BY localItemInfo.`name`";
         connection.execute(sql, (error, results, fields) => {
             if (error) {
                 reject(error);
             }
-           resolve(results);
+            resolve(results);
         })
     });
+}
+
+function queryBarOrGdno(barNo) {
+    return new Promise((resolve, reject) => {
+        let sql = `SELECT localiteminfo.* FROM localiteminfo WHERE barNo='${barNo}'`;
+        let sql2 = `SELECT localiteminfo.* FROM localiteminfo WHERE name='${barNo}'`;
+        connection.query(sql, (error, results, fields) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(results);
+        });
+    })
 }
 
 exports = module.exports = {
     "parseExcel": parseExcel,
     "getCodeInfo": getCodeInfo,
+    "queryBarOrGdno":queryBarOrGdno
 };
