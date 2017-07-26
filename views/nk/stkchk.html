@@ -14,11 +14,22 @@
 {% endblock %} 
 {% block content %}
 <br />
+<div id="inputGroup">
+<el-popover v-model="visible2" ref="popover4" placement="right" width="400" trigger="click">
+  <el-table v-on:row-dblclick="dbClick" :data="gridData">
+    <el-table-column width="150" property="date" label="日期"></el-table-column>
+    <el-table-column width="100" property="name" label="姓名"></el-table-column>
+    <el-table-column width="300" property="address" label="地址"></el-table-column>
+  </el-table>
+</el-popover>
+
+</div>
 <input id="inputGdno" placeholder="请输入货号"></input>
+
 <el-row>
     <div id="table1">
     <template>
-        <el-table :data="tableData" style="width: 100%" height="500" show-summary>
+        <el-table  :data="tableData" style="width: 100%" height="500" show-summary>
             <el-table-column prop="workdate" label="日期" width="100">
             </el-table-column>
             <el-table-column prop="ttime"  label="单号" width="100">
@@ -33,6 +44,7 @@
                     ${scope.$index+1}
                 </template>
             </el-table-column>
+            <el-table-column prop="clsName" label="分类" width="180"></el-table-column>
             <el-table-column prop="barNo" label="条码" width="180"></el-table-column>
             <el-table-column prop="code" label="货号" width="180"></el-table-column>
             <el-table-column prop="sizeNo" label="尺码" width="100"></el-table-column>
@@ -64,28 +76,15 @@
     // });
     const workdate=getIntDate(new Date());
     const ttime=Date.parse(new Date())/1000;
+
     $("#inputGdno").keydown(function(e) {  
         if (e.keyCode == 13) {  
-            let barNO=$("#inputGdno").val()
+            let barNo=$("#inputGdno").val()
             $("#inputGdno").val("");
-            if (barNO.length<1){
+            if (barNo.length<1){
                 return;
             }
-            $.post("/nk/stkchkQueryNo",{
-                "barNo":barNO
-            },function(e){
-                console.log(e);
-                let item={};
-                item.barNo=e[0].barNo;
-                item.workdate=workdate;
-                item.ttime=ttime;
-                item.code=e[0].name;
-                item.imageUrl="http://pic.belle.net.cn/2017/MDM/NK/" + e[0].name + ".jpg";
-                item.sizeNo=e[0].sizeNo;
-                item.tagPrice=e[0].tagPrice;
-                item.qty=1;
-                table1.tableData.unshift(item);
-            });
+            getItemInfoByBar(barNo);
         }  
     });
     let table1=new Vue({
@@ -100,11 +99,69 @@
             }
         }
     });
+    let inputGroup=new Vue({
+        el:"#inputGroup",
+        data:{
+            visible2:false,
+            gridData: [{
+                date: '2016-05-02',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                date: '2016-05-04',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                date: '2016-05-01',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+                }, {
+                date: '2016-05-03',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+            }]
+        },
+        methods:{
+            dbClick(row, event){
+                console.log(row);
+                this.visible2=false;
+            }
+        }
+    });
     function getIntDate(dd){
         let year=dd.getFullYear().toString();
         let month=(dd.getMonth()+1)<10?'0'+(dd.getMonth()+1).toString():(dd.getMonth()+1);
         let day=dd.getDate()<10?'0'+dd.getDate().toString():dd.getDate();
         return year+month+day;
+    }
+
+    function getItemInfoByBar(barNo){
+        console.log("aaa");
+        $.post("/nk/stkchkQueryNo",{
+            "barNo":barNo
+        },function(e){
+            console.log(e);
+            if(e.success==false){
+                alert(e.data);
+                return;
+            }
+            let item={};
+            let data=e.data;
+            if(data.length>1){
+                inputGroup.visible2=true;
+                return;
+            }
+            item.barNo=data[0].barNo;
+            item.workdate=workdate;
+            item.clsName=data[0].clsName;
+            item.ttime=ttime;
+            item.code=data[0].name;
+            item.imageUrl="http://pic.belle.net.cn/2017/MDM/NK/" + data[0].name + ".jpg";
+            item.sizeNo=data[0].sizeNo;
+            item.tagPrice=data[0].tagPrice;
+            item.qty=1;
+            table1.tableData.unshift(item);
+        });
     }
 </script>
 {% endblock %}

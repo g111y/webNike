@@ -135,10 +135,21 @@ class nike {
 
     async stkchkQueryNo(ctx,next){
         await next();
+        let data={
+            "success":false,
+            "data":"error"
+        };
         let barNo=ctx.request.body.barNo||"";
-        console.log(barNo);
+        // console.log(barNo);
         let results=await items.queryBarOrGdno(barNo);
-        ctx.body=results;
+        if(results==false){
+            data.success=false;
+            data.data=`没有找到${barNo}的信息!请重新输入`;
+        }else{
+            data.success=true;
+            data.data=results;
+        }
+        ctx.body=data;
     }
 }
 

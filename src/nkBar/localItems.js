@@ -65,7 +65,21 @@ function queryBarOrGdno(barNo) {
             if (error) {
                 reject(error);
             }
-            resolve(results);
+            //如果没有查询到条码，就查询货号
+            if(results.length==0){
+                connection.query(sql2,(error2,results2,fields2)=>{
+                    if(error2){
+                        reject(error2);
+                    }
+                    console.log(results2)
+                    if(results2.length==0){
+                        resolve(false);
+                    }
+                    resolve(results2);
+                })
+            }else{
+                resolve(results);
+            }
         });
     })
 }
