@@ -47,7 +47,7 @@ function storeItems(item) {
 
 function getCodeInfo() {
     return new Promise((resolve, reject) => {
-        let sql = "SELECT localItemInfo.`name` FROM localItemInfo GROUP BY localItemInfo.`name`";
+        let sql = "SELECT localiteminfo.`name` FROM localItemInfo GROUP BY localItemInfo.`name`";
         connection.execute(sql, (error, results, fields) => {
             if (error) {
                 reject(error);
