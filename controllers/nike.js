@@ -151,6 +151,21 @@ class nike {
         }
         ctx.body=data;
     }
+
+    async stkchkSubmit(ctx,next){
+        await next();
+        let stkArea=ctx.request.body.stkArea;
+        let tableData=ctx.request.body.tableData;
+        let res=await items.saveStkData(stkArea,tableData);
+        let data={
+            "success":false,
+            "data":"error"
+        };
+        if(res){
+            data.success=true;
+        }
+        ctx.body=data;
+    }
 }
 
 exports = module.exports = nike;

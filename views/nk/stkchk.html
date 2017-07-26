@@ -6,26 +6,50 @@
     #inputGdno {
         max-width: 300px;
         width: 180px;
-        height: 30px;
-        font-size: 11px;
+        height: 25px;
+        font-size: 18px;
         color:blue;
+    }
+    .el-table{ font-size: 13px; } 
+    #closePopover{ float:right; }
+     #stkArea{
+        margin-right: 50px;
+    }
+    #inputGdno{
+        float: left;
+        margin-right: 30px;
     }
 </style>
 {% endblock %} 
 {% block content %}
 <br />
 <div id="inputGroup">
-<el-popover v-model="visible2" ref="popover4" placement="right" width="400" trigger="click">
-  <el-table v-on:row-dblclick="dbClick" :data="gridData">
-    <el-table-column width="150" property="date" label="日期"></el-table-column>
-    <el-table-column width="100" property="name" label="姓名"></el-table-column>
-    <el-table-column width="300" property="address" label="地址"></el-table-column>
-  </el-table>
-</el-popover>
-
+    <el-popover  v-model="visible2"  placement="right" width="400" >
+    <el-button id="closePopover" v-on:click="closeThis" size="mini" type="danger" icon="close"></el-button>
+    <el-table :default-sort = "{prop: 'barNo'}"
+        v-on:row-dblclick="dbClick" :data="gridData">
+        <el-table-column width="150" property="barNo" label="条码"></el-table-column>
+        <el-table-column width="150" property="name" label="货号"></el-table-column>
+        <el-table-column width="100" property="sizeNo" label="尺码"></el-table-column>
+    </el-table>
+    </el-popover>
 </div>
 <input id="inputGdno" placeholder="请输入货号"></input>
+<div id="stkArea">
+    <el-select size="small" v-model="value" placeholder="请选择盘点区域">
+        <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+        </el-option>
+    </el-select>
+    <el-badge :value="gdCount" class="item">
+        <el-button v-on:click="submitStk" size="small" 
+            v-loading.fullscreen.lock="fullscreenLoading"
+            type="success" icon="el-icon-check ">提交盘点表</el-button>
+    </el-badge>
+</div>
 
+
+
+<hr />
 <el-row>
     <div id="table1">
     <template>
@@ -99,31 +123,76 @@
             }
         }
     });
+
+    let stkArea=new Vue({
+        el:"#stkArea",
+        data:{
+            options:[
+                {value:"A",label:"A"},
+                {value:"B",label:"B"},
+                {value:"C",label:"C"},
+                {value:"D",label:"D"},
+                {value:"E",label:"E"},
+                {value:"F",label:"F"},
+                {value:"G",label:"G"},
+                {value:"H",label:"H"},
+                {value:"I",label:"I"},
+                {value:"J",label:"J"},
+                {value:"K",label:"L"},
+                {value:"L",label:"L"},
+                {value:"M",label:"M"},
+                {value:"N",label:"N"},
+                {value:"O",label:"O"},
+            ],
+            gdCount:0,
+            value:"",
+            fullscreenLoading:false
+        },
+        methods:{
+            submitStk(){
+                if(!this.value){
+                    alert("请选择盘点区域!");
+                    return;
+                }
+                if(table1.tableData.length<1){
+                    alert("没有盘点数据");
+                    return;
+                }
+                this.fullscreenLoading=true;
+                this.$http.post("/nk/stkchkSubmit",{
+                    "tableData":table1.tableData,
+                    "stkArea":this.value
+                }).then((res)=>{
+                    let stat=res.body;
+                    if(stat.success){
+                        alert("提交成功");
+                        window.location.reload();
+                    }else{
+                        this.fullscreenLoading=false;
+                    }
+                },(err)=>{
+                    alert(err.body)
+                    this.fullscreenLoading=false;
+                });
+            }
+        }
+    })
+
     let inputGroup=new Vue({
         el:"#inputGroup",
         data:{
             visible2:false,
-            gridData: [{
-                date: '2016-05-02',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                date: '2016-05-04',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                date: '2016-05-01',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-                }, {
-                date: '2016-05-03',
-                name: '王小虎',
-                address: '上海市普陀区金沙江路 1518 弄'
-            }]
+            gridData: []
         },
         methods:{
             dbClick(row, event){
                 console.log(row);
+                getItemInfoByBar(row.barNo);
+                $("#inputGdno").val("");
+                $("#inputGdno").focus();
+                this.visible2=false;
+            },
+            closeThis(){
                 this.visible2=false;
             }
         }
@@ -149,6 +218,14 @@
             let data=e.data;
             if(data.length>1){
                 inputGroup.visible2=true;
+                inputGroup.gridData=[];
+                for(let aa of data){
+                    inputGroup.gridData.push({
+                        "barNo":aa.barNo,
+                        "name":aa.name,
+                        "sizeNo":aa.sizeNo
+                    });
+                }
                 return;
             }
             item.barNo=data[0].barNo;
@@ -161,6 +238,7 @@
             item.tagPrice=data[0].tagPrice;
             item.qty=1;
             table1.tableData.unshift(item);
+            stkArea.gdCount=table1.tableData.length;
         });
     }
 </script>

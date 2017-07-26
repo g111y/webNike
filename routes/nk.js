@@ -50,5 +50,7 @@ router.get('/stkchk', async function (ctx, next) {
     })
 })
 
-router.post("/stkchkQueryNo",nike.stkchkQueryNo)
+router.post("/stkchkQueryNo",nike.stkchkQueryNo);
+//提交盘点表
+router.post("/stkchkSubmit",nike.stkchkSubmit);
 module.exports = router;

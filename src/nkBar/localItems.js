@@ -66,26 +66,46 @@ function queryBarOrGdno(barNo) {
                 reject(error);
             }
             //如果没有查询到条码，就查询货号
-            if(results.length==0){
-                connection.query(sql2,(error2,results2,fields2)=>{
-                    if(error2){
+            if (results.length == 0) {
+                connection.query(sql2, (error2, results2, fields2) => {
+                    if (error2) {
                         reject(error2);
                     }
                     console.log(results2)
-                    if(results2.length==0){
+                    if (results2.length == 0) {
                         resolve(false);
                     }
                     resolve(results2);
                 })
-            }else{
+            } else {
                 resolve(results);
             }
         });
     })
 }
 
+
+function saveStkData(stkArea, data) {
+    return new Promise((resolve, reject) => {
+        let i = 1;
+        for (let item of data) {
+            let sql = `INSERT INTO chkstk (workdate, stkArea, ttime, seqno, clsName, 
+                barNo, code, sizeNo, qty, tagPrice) 
+                VALUES ('${item.workdate}', '${stkArea}', '${item.ttime}', 
+                    '${i}', '${item.clsName}', '${item.barNo}', '${item.code}', 
+                    '${item.sizeNo}', '${item.qty}', '${item.tagPrice}')`;
+            connection.execute(sql, (error, results, fields) => {
+                if (error) {
+                    reject(error);
+                }
+            })
+        }
+        resolve(true);
+    });
+}
 exports = module.exports = {
     "parseExcel": parseExcel,
     "getCodeInfo": getCodeInfo,
-    "queryBarOrGdno":queryBarOrGdno
+    "queryBarOrGdno": queryBarOrGdno,
+    "saveStkData": saveStkData
 };
