@@ -18,7 +18,7 @@ function parseExcel(filename) {
     result.Sheet1.shift()
     // console.log(result);
 
-    let delSql = `delete from \`nike\`.\`localItemInfo\``;
+    let delSql = `delete from \`nike\`.\`localiteminfo\``;
     connection.execute(delSql, (error, resutls, fields) => {
         if (error) {
             console.log(error);
@@ -47,7 +47,7 @@ function storeItems(item) {
 
 function getCodeInfo() {
     return new Promise((resolve, reject) => {
-        let sql = "SELECT localiteminfo.`name` FROM localItemInfo GROUP BY localItemInfo.`name`";
+        let sql = "SELECT localiteminfo.`name` FROM localiteminfo GROUP BY localiteminfo.`name`";
         connection.execute(sql, (error, results, fields) => {
             if (error) {
                 reject(error);
