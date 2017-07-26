@@ -60,7 +60,7 @@ function parseExcel(filename) {
 }
 
 function storeItems(item) {
-    let sql = `INSERT INTO \`saleItems\` (
+    let sql = `INSERT INTO \`saleitems\` (
     \`workdate\`, \`code\`, \`barNo\`, 
     \`saler\`, \`qty\`, \`tagPrice\`, 
     \`salePrice\`, \`profit\`) 
