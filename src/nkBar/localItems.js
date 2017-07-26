@@ -32,7 +32,7 @@ function parseExcel(filename) {
 }
 
 function storeItems(item) {
-    let sql = `INSERT INTO \`localItemInfo\` (\`name\`, \`clsName\`, \`barNo\`, \`utno\`, \`stock\`, 
+    let sql = `INSERT INTO \`localiteminfo\` (\`name\`, \`clsName\`, \`barNo\`, \`utno\`, \`stock\`, 
         \`buyPrice\`, \`tagPrice\`, \`Price2\`, \`vipPrice\`, \`vipDisc\`, \`vipGd\`, \`maxStock\`, 
         \`minStock\`, \`vdName\`, \`py\`, \`code\`, \`colorName\`, \`sizeNo\`, \`stat\`, \`memo\`) 
         VALUES ('${item.A}', '${item.B}', '${item.C}', '${item.D}', '${item.E || 0}', '${item.F || 0}', 
