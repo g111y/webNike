@@ -60,5 +60,12 @@ router.get("/stkchkQuery",async function(ctx,next){
 });
 router.post("/stkchkQuery",nike.stkchkQuery);
 
-
+//盘点分析
+router.get('/stockAnalyse', async function (ctx, next) {
+    console.log(ctx.session);
+    await ctx.render('nk/stockAnalyse', {
+        title: '盘点分析'
+    })
+})
+router.post("/stockAnalyse",nike.stockAnalyse);
 module.exports = router;

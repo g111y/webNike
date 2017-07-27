@@ -180,6 +180,87 @@ function stkchkQueryByCode(sdate,edate){
     })
 }
 
+//盘点结果分析
+function stockAnalyse(sdate,edate){
+    return new Promise((resolve,reject)=>{
+        let sql=`SELECT
+                localiteminfo.clsName,
+                localiteminfo.name,
+                localiteminfo.buyPrice,
+                localiteminfo.tagPrice,
+                Sum(localiteminfo.stock) AS stock,
+                Sum(
+                    localiteminfo.stock * localiteminfo.buyPrice
+                ) AS buyPriceTotal,
+                Sum(
+                    localiteminfo.stock * localiteminfo.tagPrice
+                ) AS tagPriceTotal,
+                CASE chkstk.qty
+            WHEN chkstk.qty THEN
+                Sum(chkstk.qty)
+            ELSE
+                0
+            END AS stock2,
+            CASE chkstk.qty
+            WHEN chkstk.qty THEN
+                Sum(
+                    chkstk.qty * localiteminfo.buyPrice
+                )
+            ELSE
+                0
+            END AS buyPriceTotal2,
+            CASE chkstk.qty
+            WHEN chkstk.qty THEN
+                Sum(
+                    chkstk.qty * localiteminfo.tagPrice
+                )
+            ELSE
+                0
+            END AS tagPriceTotal2,
+            (
+                Sum(chkstk.qty) - Sum(localiteminfo.stock)
+            ) AS stockCheck,
+            (
+                Sum(
+                    chkstk.qty * localiteminfo.buyPrice
+                ) - Sum(
+                    localiteminfo.stock * localiteminfo.buyPrice
+                )
+            ) AS buyPriceCheck,
+            (
+                Sum(
+                    chkstk.qty * localiteminfo.tagPrice
+                ) - Sum(
+                    localiteminfo.stock * localiteminfo.tagPrice
+                )
+            ) AS tagPriceCheck
+            FROM
+                localiteminfo
+            LEFT OUTER JOIN (
+                SELECT
+                    *
+                FROM
+                    chkstk
+                WHERE
+                    chkstk.workdate >= ${sdate}
+                AND chkstk.workdate <= ${edate}
+            ) chkstk ON chkstk.barNo = localiteminfo.barNo
+            GROUP BY
+                localiteminfo. NAME,
+                localiteminfo.clsName,
+                localiteminfo.buyPrice
+            ORDER BY
+                localiteminfo.clsName ASC,
+                localiteminfo. NAME ASC`;
+        connection.query(sql,(error,results,fields)=>{
+            if (error){
+                reject(error);
+            }
+            resolve(results);
+        });
+    })
+}
+
 exports = module.exports = {
     "parseExcel": parseExcel,
     "getCodeInfo": getCodeInfo,
@@ -188,5 +269,6 @@ exports = module.exports = {
     "stkchkQuery":stkchkQuery,
     "stkchkQueryByArea":stkchkQueryByArea,
     "stkchkQueryByClsname":stkchkQueryByClsname,
-    "stkchkQueryByCode":stkchkQueryByCode
+    "stkchkQueryByCode":stkchkQueryByCode,
+    "stockAnalyse":stockAnalyse
 };

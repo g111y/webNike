@@ -193,6 +193,28 @@ class nike {
             ctx.body=data;
         }
     }
+
+    async stockAnalyse(ctx,next){
+        //盘点分析
+        await next();
+        let data={
+            "success":false,
+            "data":"error"
+        };
+        try{
+            let sdate=ctx.request.body.sdate;
+            let edate=ctx.request.body.edate;
+            let results=await items.stockAnalyse(sdate,edate);
+            data.success=true;
+            data.data={
+                "tableData":results
+            }
+            ctx.body = data;
+        }catch(err){
+            data.data=err;
+            ctx.body=data;
+        }
+    }
 }
 
 exports = module.exports = nike;

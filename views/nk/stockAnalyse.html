@@ -1,0 +1,133 @@
+{% extends "nk/layout.html" %} 
+{% block header %} 
+{% endblock %} 
+{% block content %}
+<br />
+<div id="dateSelect">
+    <template>
+        <div class="block">
+            <span class="demonstration">请选择日期</span>
+            <el-date-picker v-model="value" type="daterange" align="right" 
+                placeholder="选择日期范围" :picker-options="pickerOptions"
+                format="yyyyMMdd" 
+                v-loading.fullscreen.lock="fullscreenLoading">
+            </el-date-picker>
+            <el-button v-on:click="query" type="primary" icon="search">查询</el-button>
+        </div>
+    </template>
+</div>
+
+<div id="table1">
+<el-tabs v-model="activeName" >
+    <el-tab-pane label="盘点差异查询" name="first">
+        <el-table :data="tableData" style="width: 100%" height="600" show-summary>
+            <el-table-column label="序号" >
+                <template scope="scope">
+                    ${scope.$index+1}
+                </template>
+            </el-table-column>
+            <el-table-column prop="clsName" label="类别" ></el-table-column>
+            <el-table-column label="图片" >
+                <template scope="scope">
+                    <img style="width: 50px;height:50px;" v-bind:src="scope.row.imageUrl" />
+                </template>
+            </el-table-column>
+            <el-table-column prop="name" sortable label="品名" ></el-table-column>
+            <el-table-column prop="buyPrice" label="进货价" ></el-table-column>
+            <el-table-column prop="tagPrice" label="牌价" ></el-table-column>
+            <el-table-column prop="stock" sortable label="帐面数量"></el-table-column>
+            <el-table-column prop="buyPriceTotal" sortable label="帐面成本"></el-table-column>
+            <el-table-column prop="tagPriceTotal" sortable label="帐面售价"></el-table-column>
+            <el-table-column prop="stock2" sortable label="实盘数量"></el-table-column>
+            <el-table-column prop="buyPriceTotal2" sortable label="实盘成本"></el-table-column>
+            <el-table-column prop="tagPriceTotal2" sortable label="实盘售价"></el-table-column>
+            <el-table-column prop="stockCheck" sortable label="数量差异"></el-table-column>
+            <el-table-column prop="buyPriceCheck" sortable label="成本差异"></el-table-column>
+            <el-table-column prop="tagPriceCheck" sortable label="售价差异"></el-table-column>
+        </el-table>
+    </el-tab-pane>
+  </el-tabs>
+    
+</div>
+          
+{% endblock %} 
+{% block script %} 
+{{super()}}
+<script>
+    "strict mode";
+    
+
+    let table1=new Vue({
+        delimiters: ['${', '}'],
+        el:"#table1",
+        data:{
+            activeName:"first",
+            tableData:[]
+        }
+    });
+
+    let dateSelect=new Vue({
+        delimiters: ['${', '}'],
+        el:"#dateSelect",
+        data:{
+            fullscreenLoading:false,
+            pickerOptions: {
+                shortcuts: [{
+                    text: '最近一周',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                        picker.$emit('pick', [start, end]);
+                        }
+                }, {
+                    text: '最近一个月',
+                    onClick(picker) {
+                    const end = new Date();
+                    const start = new Date();
+                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                    picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近三个月',
+                    onClick(picker) {
+                    const end = new Date();
+                    const start = new Date();
+                    start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                    picker.$emit('pick', [start, end]);
+                    }
+                }]
+            },
+            value: ''
+        },
+        methods:{
+            query(){
+                let sd=getIntDate(this.value[0]);
+                let dd=getIntDate(this.value[1]);
+                this.fullscreenLoading=true;
+                this.$http.post("/nk/stockAnalyse", {
+                    sdate: sd,
+                    edate:dd
+                }).then((res) => {
+                    this.fullscreenLoading = false;
+                    console.log(res.body);
+                    let data=res.body;
+                    if (data.success==false){
+                        return;
+                    }
+                    for(let i=0;i<data.data.tableData.length;i++){
+                        data.data.tableData[i].imageUrl="http://pic.belle.net.cn/2017/MDM/NK/" + data.data.tableData[i].name + ".jpg";
+                    }
+                    table1.tableData=data.data.tableData;
+                })
+            }
+        }
+    });
+    function getIntDate(dd){
+        let year=dd.getFullYear().toString();
+        let month=(dd.getMonth()+1)<10?'0'+(dd.getMonth()+1).toString():(dd.getMonth()+1);
+        let day=dd.getDate()<10?'0'+dd.getDate().toString():dd.getDate();
+        return year+month+day;
+    }
+</script>
+{% endblock %}
