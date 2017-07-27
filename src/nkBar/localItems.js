@@ -103,9 +103,39 @@ function saveStkData(stkArea, data) {
         resolve(true);
     });
 }
+
+function stkchkQuery(sdate,edate){
+    return new Promise((resolve,reject)=>{
+        let sql=`SELECT
+                chkstk.workdate,
+                chkstk.stkArea,
+                chkstk.ttime,
+                Sum(chkstk.qty) AS qty,
+                Sum(tagPrice * qty) AS tagPriceTotal
+            FROM
+                chkstk
+            WHERE
+                chkstk.workdate >= ${sdate}
+            AND chkstk.workdate <= ${edate}
+            GROUP BY
+                chkstk.workdate,
+                chkstk.stkArea,
+                chkstk.ttime
+            ORDER BY workdate,ttime`;
+        connection.query(sql,(error,results,fields)=>{
+            if (error){
+                reject(error);
+            }
+            resolve(results);
+        });
+    })
+}
+
+
 exports = module.exports = {
     "parseExcel": parseExcel,
     "getCodeInfo": getCodeInfo,
     "queryBarOrGdno": queryBarOrGdno,
-    "saveStkData": saveStkData
+    "saveStkData": saveStkData,
+    "stkchkQuery":stkchkQuery
 };

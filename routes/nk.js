@@ -42,15 +42,23 @@ router.get("/saleQuery", async(ctx, next) => {
 })
 router.post("/saleQuery",nike.saleQuery);
 
-
+//盘点
 router.get('/stkchk', async function (ctx, next) {
     console.log(ctx.session);
     await ctx.render('nk/stkchk', {
         title: '盘点'
     })
 })
-
 router.post("/stkchkQueryNo",nike.stkchkQueryNo);
 //提交盘点表
 router.post("/stkchkSubmit",nike.stkchkSubmit);
+//查询盘点表
+router.get("/stkchkQuery",async function(ctx,next){
+    await ctx.render('nk/stkchkQuery', {
+        title: '盘点表查询'
+    })
+});
+router.post("/stkchkQuery",nike.stkchkQuery);
+
+
 module.exports = router;

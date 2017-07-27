@@ -166,6 +166,23 @@ class nike {
         }
         ctx.body=data;
     }
+
+    async stkchkQuery(ctx,next){
+        await next();
+        let data={
+            "success":false,
+            "data":"error"
+        };
+        try{
+            let results=await items.stkchkQuery(ctx.request.body.sdate,ctx.request.body.edate);
+            data.success=true;
+            data.data=results
+            ctx.body = data;
+        }catch(err){
+            data.data=err;
+            ctx.body=data;
+        }
+    }
 }
 
 exports = module.exports = nike;
