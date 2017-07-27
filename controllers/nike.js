@@ -174,9 +174,19 @@ class nike {
             "data":"error"
         };
         try{
-            let results=await items.stkchkQuery(ctx.request.body.sdate,ctx.request.body.edate);
+            let sdate=ctx.request.body.sdate;
+            let edate=ctx.request.body.edate;
+            let results=await items.stkchkQuery(sdate,edate);
+            let results2=await items.stkchkQueryByArea(sdate,edate);
+            let results3=await items.stkchkQueryByClsname(sdate,edate);
+            let results4=await items.stkchkQueryByCode(sdate,edate);
             data.success=true;
-            data.data=results
+            data.data={
+                "tableData":results,
+                "tableData2":results2,
+                "tableData3":results3,
+                "tableData4":results4
+            }
             ctx.body = data;
         }catch(err){
             data.data=err;

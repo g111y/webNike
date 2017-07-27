@@ -18,7 +18,8 @@
 </div>
 
 <div id="table1">
-    <template>
+<el-tabs v-model="activeName" >
+    <el-tab-pane label="盘点表查询" name="first">
         <el-table :data="tableData" style="width: 100%" height="600" show-summary>
             <el-table-column prop="workdate" sortable label="日期" width="180"></el-table-column>
             <el-table-column prop="stkArea" label="盘点区域" width="180"></el-table-column>
@@ -26,7 +27,35 @@
             <el-table-column prop="qty" label="数量"></el-table-column>
             <el-table-column prop="tagPriceTotal" sortable label="牌价合计"></el-table-column>
         </el-table>
-    </template>
+    </el-tab-pane>
+    <el-tab-pane label="按盘点区域汇总" name="second">
+        <el-table :data="tableData2" style="width: 100%" height="600" show-summary>
+            <el-table-column prop="stkArea" label="盘点区域" width="180"></el-table-column>
+            <el-table-column prop="qty" label="数量"></el-table-column>
+            <el-table-column prop="tagPriceTotal" sortable label="牌价合计"></el-table-column>
+        </el-table>
+    </el-tab-pane>
+    <el-tab-pane label="按类别汇总" name="third">
+        <el-table :data="tableData3" style="width: 100%" height="600" show-summary>
+            <el-table-column prop="clsName" label="类别" width="180"></el-table-column>
+            <el-table-column prop="qty" label="数量"></el-table-column>
+            <el-table-column prop="tagPriceTotal" sortable label="牌价合计"></el-table-column>
+        </el-table>
+    </el-tab-pane>
+    <el-tab-pane label="按货号汇总" name="four">
+        <el-table :data="tableData4" style="width: 100%" height="600" show-summary>
+            <el-table-column label="图片" width="180">
+                <template scope="scope">
+                    <img style="width: 100px;height:100px;" v-bind:src="scope.row.imageUrl" />
+                </template>
+            </el-table-column>
+            <el-table-column prop="code" label="货号" width="180"></el-table-column>
+            <el-table-column prop="qty" label="数量"></el-table-column>
+            <el-table-column prop="tagPriceTotal" sortable label="牌价合计"></el-table-column>
+        </el-table>
+    </el-tab-pane>
+  </el-tabs>
+    
 </div>
           
 {% endblock %} 
@@ -40,7 +69,10 @@
         delimiters: ['${', '}'],
         el:"#table1",
         data:{
-            tableData:[]
+            activeName:"first",
+            tableData:[],
+            tableData2:[],
+            tableData3:[]
         }
     });
 
@@ -93,10 +125,13 @@
                     if (data.success==false){
                         return;
                     }
-                    for(let i=0;i<data.data.length;i++){
-                        data.data[i].imageUrl="http://pic.belle.net.cn/2017/MDM/NK/" + data.data[i].code + ".jpg";
+                    for(let i=0;i<data.data.tableData4.length;i++){
+                        data.data.tableData4[i].imageUrl="http://pic.belle.net.cn/2017/MDM/NK/" + data.data.tableData4[i].code + ".jpg";
                     }
-                    table1.tableData=data.data;
+                    table1.tableData=data.data.tableData;
+                    table1.tableData2=data.data.tableData2;
+                    table1.tableData3=data.data.tableData3;
+                    table1.tableData4=data.data.tableData4;
                 })
             }
         }

@@ -37,10 +37,12 @@ function storeItems(item) {
         \`minStock\`, \`vdName\`, \`py\`, \`code\`, \`colorName\`, \`sizeNo\`, \`stat\`, \`memo\`) 
         VALUES ('${item.A}', '${item.B}', '${item.C}', '${item.D}', '${item.E || 0}', '${item.F || 0}', 
             '${item.G || 0}', '${item.H || 0}', '${item.I || 0}', '${item.J}', '${item.K}', '${item.L}', '${item.M}', '${item.N}',
-             '${item.O}', '${item.P}', '${item.Q}', '${item.R}', '${item.S}', '${item.T}')`;
+             '${item.O}', '${item.P}', '${item.Q}', '${item.R}', '${item.S}', "${item.T}")`;
     connection.execute(sql, (error, resutls, fields) => {
         if (error) {
+            console.log(sql);
             console.log(error);
+
         }
     });
 }
@@ -87,13 +89,14 @@ function queryBarOrGdno(barNo) {
 
 function saveStkData(stkArea, data) {
     return new Promise((resolve, reject) => {
-        let i = 1;
+        let i = data.length;
         for (let item of data) {
             let sql = `INSERT INTO chkstk (workdate, stkArea, ttime, seqno, clsName, 
                 barNo, code, sizeNo, qty, tagPrice) 
                 VALUES ('${item.workdate}', '${stkArea}', '${item.ttime}', 
                     '${i}', '${item.clsName}', '${item.barNo}', '${item.code}', 
                     '${item.sizeNo}', '${item.qty}', '${item.tagPrice}')`;
+            i--;
             connection.execute(sql, (error, results, fields) => {
                 if (error) {
                     reject(error);
@@ -104,23 +107,15 @@ function saveStkData(stkArea, data) {
     });
 }
 
+
+//盘点表查询
 function stkchkQuery(sdate,edate){
     return new Promise((resolve,reject)=>{
-        let sql=`SELECT
-                chkstk.workdate,
-                chkstk.stkArea,
-                chkstk.ttime,
-                Sum(chkstk.qty) AS qty,
-                Sum(tagPrice * qty) AS tagPriceTotal
-            FROM
-                chkstk
-            WHERE
-                chkstk.workdate >= ${sdate}
-            AND chkstk.workdate <= ${edate}
-            GROUP BY
-                chkstk.workdate,
-                chkstk.stkArea,
-                chkstk.ttime
+        let sql=`SELECT chkstk.workdate,chkstk.stkArea,chkstk.ttime,
+                Sum(chkstk.qty) AS qty,Sum(tagPrice * qty) AS tagPriceTotal
+            FROM chkstk
+            WHERE chkstk.workdate >= ${sdate} AND chkstk.workdate <= ${edate}
+            GROUP BY chkstk.workdate,chkstk.stkArea,chkstk.ttime
             ORDER BY workdate,ttime`;
         connection.query(sql,(error,results,fields)=>{
             if (error){
@@ -131,11 +126,67 @@ function stkchkQuery(sdate,edate){
     })
 }
 
+//盘点表查询--按区域汇总
+function stkchkQueryByArea(sdate,edate){
+    return new Promise((resolve,reject)=>{
+        let sql=`SELECT chkstk.stkArea,
+                Sum(chkstk.qty) AS qty,Sum(tagPrice * qty) AS tagPriceTotal
+            FROM chkstk
+            WHERE chkstk.workdate >= ${sdate} AND chkstk.workdate <= ${edate}
+            GROUP BY chkstk.stkArea
+            ORDER BY chkstk.stkArea`;
+        connection.query(sql,(error,results,fields)=>{
+            if (error){
+                reject(error);
+            }
+            resolve(results);
+        });
+    })
+}
+
+//盘点表查询--按类别汇总
+function stkchkQueryByClsname(sdate,edate){
+    return new Promise((resolve,reject)=>{
+        let sql=`SELECT chkstk.clsName,
+                Sum(chkstk.qty) AS qty,Sum(tagPrice * qty) AS tagPriceTotal
+            FROM chkstk
+            WHERE chkstk.workdate >= ${sdate} AND chkstk.workdate <= ${edate}
+            GROUP BY chkstk.clsName
+            ORDER BY chkstk.clsName`;
+        connection.query(sql,(error,results,fields)=>{
+            if (error){
+                reject(error);
+            }
+            resolve(results);
+        });
+    })
+}
+
+//盘点表查询--按货号汇总
+function stkchkQueryByCode(sdate,edate){
+    return new Promise((resolve,reject)=>{
+        let sql=`SELECT chkstk.code,
+                Sum(chkstk.qty) AS qty,Sum(tagPrice * qty) AS tagPriceTotal
+            FROM chkstk
+            WHERE chkstk.workdate >= ${sdate} AND chkstk.workdate <= ${edate}
+            GROUP BY chkstk.code
+            ORDER BY chkstk.code`;
+        connection.query(sql,(error,results,fields)=>{
+            if (error){
+                reject(error);
+            }
+            resolve(results);
+        });
+    })
+}
 
 exports = module.exports = {
     "parseExcel": parseExcel,
     "getCodeInfo": getCodeInfo,
     "queryBarOrGdno": queryBarOrGdno,
     "saveStkData": saveStkData,
-    "stkchkQuery":stkchkQuery
+    "stkchkQuery":stkchkQuery,
+    "stkchkQueryByArea":stkchkQueryByArea,
+    "stkchkQueryByClsname":stkchkQueryByClsname,
+    "stkchkQueryByCode":stkchkQueryByCode
 };
