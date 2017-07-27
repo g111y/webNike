@@ -26,7 +26,10 @@
                     ${scope.$index+1}
                 </template>
             </el-table-column>
-            <el-table-column prop="clsName" label="类别" ></el-table-column>
+            <el-table-column prop="clsName" 
+               :filters="cls"
+               :filter-method="filterTag"
+               filter-placement="bottom-end" label="类别" ></el-table-column>
             <el-table-column label="图片" >
                 <template scope="scope">
                     <img style="width: 50px;height:50px;" v-bind:src="scope.row.imageUrl" />
@@ -62,7 +65,13 @@
         el:"#table1",
         data:{
             activeName:"first",
+            cls:[],
             tableData:[]
+        },
+        methods:{
+            filterTag(value, row) {
+                return row.clsName === value;
+            }
         }
     });
 
@@ -119,6 +128,7 @@
                         data.data.tableData[i].imageUrl="http://pic.belle.net.cn/2017/MDM/NK/" + data.data.tableData[i].name + ".jpg";
                     }
                     table1.tableData=data.data.tableData;
+                    table1.cls=data.data.cls;
                 })
             }
         }

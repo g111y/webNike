@@ -59,6 +59,25 @@ function getCodeInfo() {
     });
 }
 
+function getCls(){
+    return new Promise((resolve,reject)=>{
+        let sql = "select clsName from localiteminfo group by clsName ORDER BY clsName";
+        connection.execute(sql, (error, results, fields) => {
+            if (error) {
+                reject(error);
+            }
+            let cls=[]
+            for(let a of results){
+                cls.push({
+                    "text":a.clsName,
+                    "value":a.clsName
+                })
+            }
+            resolve(cls);
+        })
+    })
+}
+
 function queryBarOrGdno(barNo) {
     return new Promise((resolve, reject) => {
         let sql = `SELECT localiteminfo.* FROM localiteminfo WHERE barNo='${barNo}'`;
@@ -270,5 +289,6 @@ exports = module.exports = {
     "stkchkQueryByArea":stkchkQueryByArea,
     "stkchkQueryByClsname":stkchkQueryByClsname,
     "stkchkQueryByCode":stkchkQueryByCode,
-    "stockAnalyse":stockAnalyse
+    "stockAnalyse":stockAnalyse,
+    "getCls":getCls
 };

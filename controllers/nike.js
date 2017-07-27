@@ -205,9 +205,11 @@ class nike {
             let sdate=ctx.request.body.sdate;
             let edate=ctx.request.body.edate;
             let results=await items.stockAnalyse(sdate,edate);
+            let cls=await items.getCls();
             data.success=true;
             data.data={
-                "tableData":results
+                "tableData":results,
+                "cls":cls
             }
             ctx.body = data;
         }catch(err){
