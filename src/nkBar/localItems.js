@@ -265,12 +265,13 @@ function stockAnalyse(sdate,edate){
                 AND chkstk.workdate <= ${edate}
             ) chkstk ON chkstk.barNo = localiteminfo.barNo
             GROUP BY
-                localiteminfo. NAME,
+                localiteminfo.name,
                 localiteminfo.clsName,
-                localiteminfo.buyPrice
+                localiteminfo.buyPrice,
+                localiteminfo.tagPrice
             ORDER BY
                 localiteminfo.clsName ASC,
-                localiteminfo. NAME ASC`;
+                localiteminfo. name ASC`;
         connection.query(sql,(error,results,fields)=>{
             if (error){
                 reject(error);
