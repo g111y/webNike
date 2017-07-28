@@ -202,76 +202,63 @@ function stkchkQueryByCode(sdate,edate){
 //盘点结果分析
 function stockAnalyse(sdate,edate){
     return new Promise((resolve,reject)=>{
-        let sql=`SELECT
-                localiteminfo.clsName,
-                localiteminfo.name,
-                localiteminfo.buyPrice,
-                localiteminfo.tagPrice,
-                Sum(localiteminfo.stock) AS stock,
-                Sum(
-                    localiteminfo.stock * localiteminfo.buyPrice
-                ) AS buyPriceTotal,
-                Sum(
-                    localiteminfo.stock * localiteminfo.tagPrice
-                ) AS tagPriceTotal,
-                CASE chkstk.qty
-            WHEN chkstk.qty THEN
-                Sum(chkstk.qty)
-            ELSE
-                0
-            END AS stock2,
-            CASE chkstk.qty
-            WHEN chkstk.qty THEN
-                Sum(
-                    chkstk.qty * localiteminfo.buyPrice
-                )
-            ELSE
-                0
-            END AS buyPriceTotal2,
-            CASE chkstk.qty
-            WHEN chkstk.qty THEN
-                Sum(
-                    chkstk.qty * localiteminfo.tagPrice
-                )
-            ELSE
-                0
-            END AS tagPriceTotal2,
-            (
-                Sum(chkstk.qty) - Sum(localiteminfo.stock)
-            ) AS stockCheck,
-            (
-                Sum(
-                    chkstk.qty * localiteminfo.buyPrice
-                ) - Sum(
-                    localiteminfo.stock * localiteminfo.buyPrice
-                )
-            ) AS buyPriceCheck,
-            (
-                Sum(
-                    chkstk.qty * localiteminfo.tagPrice
-                ) - Sum(
-                    localiteminfo.stock * localiteminfo.tagPrice
-                )
-            ) AS tagPriceCheck
-            FROM
-                localiteminfo
-            LEFT OUTER JOIN (
-                SELECT
-                    *
-                FROM
-                    chkstk
-                WHERE
-                    chkstk.workdate >= ${sdate}
-                AND chkstk.workdate <= ${edate}
-            ) chkstk ON chkstk.barNo = localiteminfo.barNo
-            GROUP BY
-                localiteminfo.name,
-                localiteminfo.clsName,
-                localiteminfo.buyPrice,
-                localiteminfo.tagPrice
-            ORDER BY
-                localiteminfo.clsName ASC,
-                localiteminfo. name ASC`;
+        let sql=`SELECT AA.clsName,AA.name,
+	sum(AA.qty) as qtyTotal,
+	sum(AA.buyPrice) as buyPriceTotal,
+	sum(AA.tagPrice) as tagPriceTotal,
+	sum(AA.qty2) as qtyTotal2,
+	sum(AA.buyPrice2) as buyPriceTotal2,
+	sum(AA.tagPrice2) as tagPriceTotal2,
+	(sum(AA.qty2) - sum(AA.qty)) as qtyCheck,
+	(sum(AA.buyPrice2) - sum(AA.buyPrice)) as buyPriceCheck,
+	(sum(AA.tagPrice2) - sum(AA.tagPrice)) as tagPriceCheck
+ FROM (
+SELECT
+	localiteminfo.clsName,
+	localiteminfo.name,
+	localiteminfo.sizeNo,
+	sum(localiteminfo.stock) AS qty,
+	sum(
+		localiteminfo.stock * localiteminfo.buyPrice
+	) AS buyPrice,
+	sum(
+		localiteminfo.stock * localiteminfo.tagPrice
+	) AS tagPrice,
+	0 AS qty2,
+	0 AS buyPrice2,
+	0 AS tagPrice2
+FROM
+	localiteminfo
+GROUP BY
+	localiteminfo.clsName,
+	localiteminfo. NAME,
+	localiteminfo.sizeNo
+UNION ALL
+	(
+		SELECT
+			chkstk.clsName,
+			chkstk.code as name,
+			chkstk.sizeNo,
+			0 AS qty,
+			0 AS buyPrice,
+			0 AS tagPrice,
+			sum(chkstk.qty) AS qty2,
+			sum(
+				chkstk.qty * localiteminfo.buyPrice
+			) AS buyPrice2,
+			sum(
+				chkstk.qty * localiteminfo.tagPrice
+			) AS tagPrice2
+		FROM
+			chkstk	LEFT OUTER JOIN	localiteminfo on chkstk.barNo=localiteminfo.barNo
+		WHERE
+			chkstk.barNo = localiteminfo.barNo
+		GROUP BY
+			chkstk.clsName,
+			chkstk.code,
+			chkstk.sizeNo
+	)) AA
+GROUP BY AA.clsName,AA.name`;
         connection.query(sql,(error,results,fields)=>{
             if (error){
                 reject(error);
