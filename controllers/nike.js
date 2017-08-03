@@ -217,6 +217,28 @@ class nike {
             ctx.body=data;
         }
     }
+
+    //库存查询
+    async stockQuery(ctx,next){
+        await next();
+        let data={
+            "success":false,
+            "data":"error"
+        };
+        try{
+            let cls=await items.getCls();
+            let stock=await items.stockQuery();
+            data.success=true;
+            data.data={
+                "tableData":stock,
+                "cls":cls
+            }
+            ctx.body = data;
+        }catch(err){
+            data.data=err;
+            ctx.body=data;
+        }
+    }
 }
 
 exports = module.exports = nike;

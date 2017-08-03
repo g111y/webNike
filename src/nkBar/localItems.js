@@ -199,6 +199,19 @@ function stkchkQueryByCode(sdate,edate){
     })
 }
 
+//盘点表查询--按货号汇总
+function stockQuery(){
+    return new Promise((resolve,reject)=>{
+        let sql=`SELECT * FROM v_localItemInfo_query`;
+        connection.query(sql,(error,results,fields)=>{
+            if (error){
+                reject(error);
+            }
+            resolve(results);
+        });
+    })
+}
+
 //盘点结果分析
 function stockAnalyse(sdate,edate){
     return new Promise((resolve,reject)=>{
@@ -278,5 +291,6 @@ exports = module.exports = {
     "stkchkQueryByClsname":stkchkQueryByClsname,
     "stkchkQueryByCode":stkchkQueryByCode,
     "stockAnalyse":stockAnalyse,
-    "getCls":getCls
+    "getCls":getCls,
+    "stockQuery":stockQuery
 };

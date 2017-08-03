@@ -30,6 +30,7 @@
                 <el-menu-item index="2-2">销售明细文件上传</el-menu-item>
                 <el-menu-item index="2-4">商品资料文件上传</el-menu-item>
                 <el-menu-item index="2-3">销售查询</el-menu-item> 
+                <el-menu-item index="2-5">库存查询</el-menu-item>
             </el-submenu>
             <el-submenu index="3">
                 <template slot="title">库存管理</template>
@@ -75,6 +76,9 @@
                     case '2-4':
                         window.location.href="/nk/itemFileUpload";
                         console.log(key);
+                        break;
+                    case '2-5':
+                        window.location.href="/nk/stockQuery";
                         break;
                     case '3-1':
                         window.location.href="/nk/stkchk";
