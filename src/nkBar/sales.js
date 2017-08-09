@@ -80,20 +80,20 @@ function storeItems(item) {
 }
 
 function getCodeInfo() {
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve, reject) => {
         let sql = "SELECT saleitems.`code` FROM saleitems GROUP BY saleitems.`code`";
         connection.execute(sql, (error, results, fields) => {
             if (error) {
                 reject(error);
             }
-           resolve(results);
+            resolve(results);
         })
     });
 }
 
-function saleQuery(sdate,edate){
-    return new Promise((resolve,reject)=>{
-        sql=`SELECT items.code,items.colorName,items.name,items.genderName,
+function saleQuery(sdate, edate) {
+    return new Promise((resolve, reject) => {
+        sql = `SELECT items.code,items.colorName,items.name,items.genderName,
                     items.tagPrice,items.categoryName,items.purchaseSeasonName,
                     items.yearsName,Sum(saleitems.qty) AS qty,
                     Sum(saleitems.tagPrice) AS tagPrices,
@@ -111,16 +111,39 @@ function saleQuery(sdate,edate){
                     items.genderName,items.tagPrice,
                     items.categoryName,items.purchaseSeasonName,
                     items.yearsName`;
-        connection.query(sql,(error,results,field)=>{
-            if (error){
+        connection.query(sql, (error, results, field) => {
+            if (error) {
                 reject(error);
             }
             resolve(results);
         });
     });
 }
+
+function saleQueryBysaler(sdate, edate) {
+    return new Promise((resolve, reject) => {
+        let sql = `SELECT
+                saleitems.saler,
+                sum(saleitems.qty) as qty,
+                sum(saleitems.salePrice) as salePrice
+                FROM
+                saleitems
+                WHERE
+                saleitems.workdate >= ${sdate} AND
+                saleitems.workdate <= ${edate}
+                GROUP BY saleitems.saler`;
+        connection.query(sql, (error, results, field) => {
+            if (error) {
+                reject(error);
+            }
+            resolve(results);
+        });
+    })
+}
+
 exports = module.exports = {
     "parseExcel": parseExcel,
     "getCodeInfo": getCodeInfo,
-    "saleQuery":saleQuery
+    "saleQuery": saleQuery,
+    "saleQueryBysaler":saleQueryBysaler
 };

@@ -17,8 +17,9 @@
     </template>
 </div>
 
-<div id="table1">
-    <template>
+<div id="table1"> 
+<el-tabs v-model="activeName" >
+    <el-tab-pane label="销售查询/依货号" name="first">
         <el-table :data="tableData" style="width: 100%" height="600" show-summary>
             <el-table-column label="图片" width="180">
                 <template scope="scope">
@@ -37,7 +38,15 @@
             <el-table-column prop="salePrices"  label="累计销售"></el-table-column>
             <el-table-column prop="profits"  label="累计毛利"></el-table-column>
         </el-table>
-    </template>
+    </el-tab-pane>
+    <el-tab-pane label="销售查询/依员工" name="second">
+        <el-table :data="tableData2" style="width: 100%" height="600" show-summary>
+            <el-table-column prop="saler" sortable label="员工" width="180"></el-table-column>
+            <el-table-column prop="qty" sortable label="销售数量"></el-table-column>
+            <el-table-column prop="salePrice"  label="累计销售"></el-table-column>
+        </el-table>
+    </el-tab-pane>
+</el-tabs>
 </div>
           
 {% endblock %} 
@@ -51,20 +60,9 @@
         delimiters: ['${', '}'],
         el:"#table1",
         data:{
-            tableData:[{
-                code: '898457-001',
-                colorName: '透明',
-                name: 'NIKE FLEX',
-                genderName: '男子',
-                tagPrice: '669',
-                categoryName: '鞋',
-                purchaseSeasonName:"",
-                yearsName: '2017',
-                qty: '1',
-                tagPrices: '669.0',
-                salePrices: '669.',
-                profits: '267.60'
-            }]
+            activeName:"first",
+            tableData:[],
+            tableData2:[]
         }
     });
 
@@ -117,10 +115,11 @@
                     if (data.success==false){
                         return;
                     }
-                    for(let i=0;i<data.data.length;i++){
-                        data.data[i].imageUrl="http://pic.belle.net.cn/2017/MDM/NK/" + data.data[i].code + ".jpg";
+                    for(let i=0;i<data.data.tableData.length;i++){
+                        data.data.tableData[i].imageUrl="http://pic.belle.net.cn/2017/MDM/NK/" + data.data.tableData[i].code + ".jpg";
                     }
-                    table1.tableData=data.data;
+                    table1.tableData=data.data.tableData;
+                    table1.tableData2=data.data.tableData2;
                 })
             }
         }

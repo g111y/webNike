@@ -5,7 +5,6 @@ const items = require("../src/nkBar/localItems.js");//.parseExcel;
 //const getCodeInfo = require("../src/nkBar/sales.js").getCodeInfo;
 const query = new queryList();
 
-
 class nike {
     // constructor() {
     //     console.log("this is nike");
@@ -123,9 +122,15 @@ class nike {
             "data":"error"
         };
         try{
-            let results=await sales.saleQuery(ctx.request.body.sdate,ctx.request.body.edate);
+            let sdate=ctx.request.body.sdate;
+            let edate=ctx.request.body.edate;
+            let results=await sales.saleQuery(sdate,edate);
+            let results2=await sales.saleQueryBysaler(sdate,edate);
             data.success=true;
-            data.data=results
+            data.data={
+                tableData:results,
+                tableData2:results2
+            }
             ctx.body = data;
         }catch(err){
             data.data=err;
