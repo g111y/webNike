@@ -37,7 +37,7 @@ function storeItems(item) {
         \`minStock\`, \`vdName\`, \`py\`, \`code\`, \`colorName\`, \`sizeNo\`, \`stat\`, \`memo\`) 
         VALUES ('${item.A}', '${item.B}', '${item.C}', '${item.D}', '${item.E || 0}', '${item.F || 0}', 
             '${item.G || 0}', '${item.H || 0}', '${item.I || 0}', '${item.J}', '${item.K}', '${item.L}', '${item.M}', '${item.N}',
-             '${item.O}', '${item.P}', '${item.Q}', '${item.R}', '${item.S}', "${item.T}")`;
+             '${item.Q}', '${item.Q}', '${item.R}', '${item.S}', '${item.V}', "${item.W}")`;
     connection.execute(sql, (error, resutls, fields) => {
         if (error) {
             console.log(sql);
