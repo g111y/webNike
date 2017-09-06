@@ -265,7 +265,9 @@ UNION ALL
 		FROM
 			chkstk	LEFT OUTER JOIN	localiteminfo on chkstk.barNo=localiteminfo.barNo
 		WHERE
-			chkstk.barNo = localiteminfo.barNo
+            chkstk.barNo = localiteminfo.barNo 
+            and chkstk.workdate>=${sdate}
+            and chkstk.workdate<=${edate}
 		GROUP BY
 			chkstk.clsName,
 			chkstk.code,
